@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom/client';
 import {useState, useEffect, useRef} from 'react';
 import * as esbuild from 'esbuild-wasm';
-import { start } from 'repl';
+import { unpkgPathPlugin} from './plugins/unpkg-path.plugin'
 
 const App = () => {
   const ref = useRef<any>();
@@ -23,12 +23,14 @@ const App = () => {
       return;
     }
     //text we want to transpile
-   const result = await ref.current.transform(input, {
-      loader: 'jsx',
-      target: 'es2015'
-    });
-
-    console.log(result)
+    const result = await ref.current.build({
+      entryPoints: ['index.js'],
+      bundle: true,
+      write: false,
+      plugins: [unpkgPathPlugin()]
+    })
+    // console.log(result)
+    setCode(result.outputFiles[0].text)
 
   }
   return <div>
